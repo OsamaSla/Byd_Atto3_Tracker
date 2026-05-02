@@ -227,55 +227,84 @@ export function History() {
                       </div>
                     </div>
                   ) : (
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-2">
-                          <Car className="w-4 h-4 text-cyan-300 drop-shadow" />
-                          <span className="text-sm text-slate-400/80">
-                            {format(new Date(drive.start_time), 'dd/MM/yyyy HH:mm')}
-                          </span>
+                    <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
+                      <div className="flex-1 w-full">
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="flex items-center gap-2">
+                            <Car className="w-4 h-4 text-cyan-300 drop-shadow" />
+                            <span className="text-sm text-slate-400/80">
+                              {format(new Date(drive.start_time), 'dd/MM/yyyy HH:mm')}
+                            </span>
+                          </div>
+                          <div className="flex gap-2 sm:hidden">
+                            <button
+                              onClick={() => setEditingDrive(drive)}
+                              className="p-1.5 text-cyan-400 hover:bg-cyan-500/10 rounded-lg transition-colors"
+                            >
+                              <Edit2 className="w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={() => handleDeleteDrive(drive.id)}
+                              className="p-1.5 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
                         </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-2">
+
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-2 mb-3">
                           <div>
-                            <span className="text-xs text-slate-400/80">SoC</span>
-                            <p className="text-lime-300 font-semibold drop-shadow">
+                            <span className="text-[10px] sm:text-xs text-slate-400/80 uppercase tracking-wider">SoC</span>
+                            <p className="text-lime-300 font-semibold drop-shadow text-sm sm:text-base">
                               {drive.start_soc.toFixed(1)}% → {drive.end_soc.toFixed(1)}%
                             </p>
                           </div>
                           <div>
-                            <span className="text-xs text-slate-400/80">Distance</span>
-                            <p className="text-lime-300 font-semibold drop-shadow">
+                            <span className="text-[10px] sm:text-xs text-slate-400/80 uppercase tracking-wider">Distance</span>
+                            <p className="text-lime-300 font-semibold drop-shadow text-sm sm:text-base">
                               {drive.distance_km.toFixed(1)} km
                             </p>
                           </div>
                           <div>
-                            <span className="text-xs text-slate-400/80">Efficiency</span>
-                            <p className="text-lime-300 font-semibold drop-shadow">
+                            <span className="text-[10px] sm:text-xs text-slate-400/80 uppercase tracking-wider">Efficiency</span>
+                            <p className="text-lime-300 font-semibold drop-shadow text-sm sm:text-base">
                               {((drive.distance_km / (drive.start_soc - drive.end_soc)) || 0).toFixed(2)} km/1%
+                            </p>
+                          </div>
+                          <div>
+                            <span className="text-[10px] sm:text-xs text-slate-400/80 uppercase tracking-wider">Energy Used</span>
+                            <p className="text-lime-300 font-semibold drop-shadow text-sm sm:text-base">
+                              {kwhUsed.toFixed(2)} kWh
                             </p>
                           </div>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4 mt-2 mb-2 p-2 bg-slate-900/40 rounded-lg border border-slate-700/50">
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-4 mt-2 mb-2 p-2.5 bg-slate-900/40 rounded-lg border border-slate-700/50">
                           <div>
-                            <span className="text-[10px] uppercase tracking-wider text-slate-400/80 block mb-0.5">Home Cost (AC)</span>
-                            <p className="text-emerald-400 font-medium drop-shadow text-sm">
+                            <span className="text-[10px] uppercase tracking-wider text-slate-400/80 block mb-0.5">Energy / 1%</span>
+                            <p className="text-cyan-300 font-medium drop-shadow text-sm">
+                              {(kwhUsed / (drive.start_soc - drive.end_soc) || 0).toFixed(3)} kWh
+                            </p>
+                          </div>
+                          <div className="flex sm:block justify-between items-center">
+                            <span className="text-[10px] uppercase tracking-wider text-slate-400/80 block mb-0.5">Home Cost</span>
+                            <p className="text-emerald-400 font-medium drop-shadow text-sm text-right sm:text-left">
                               ₪{costAC.toFixed(2)}
                             </p>
                           </div>
-                          <div>
-                            <span className="text-[10px] uppercase tracking-wider text-slate-400/80 block mb-0.5">Outside Cost (DC)</span>
-                            <p className="text-amber-400 font-medium drop-shadow text-sm">
+                          <div className="flex sm:block justify-between items-center">
+                            <span className="text-[10px] uppercase tracking-wider text-slate-400/80 block mb-0.5">Outside Cost</span>
+                            <p className="text-amber-400 font-medium drop-shadow text-sm text-right sm:text-left">
                               ₪{costDC.toFixed(2)}
                             </p>
                           </div>
                         </div>
 
                         {drive.notes && (
-                          <p className="text-sm text-slate-400/80 italic">{drive.notes}</p>
+                          <p className="text-xs sm:text-sm text-slate-400/80 italic mt-2">{drive.notes}</p>
                         )}
                       </div>
-                      <div className="flex gap-2 ml-4">
+                      <div className="hidden sm:flex gap-2 ml-4">
                         <button
                           onClick={() => setEditingDrive(drive)}
                           className="p-2 text-cyan-400 hover:bg-cyan-500/10 rounded-lg transition-colors"

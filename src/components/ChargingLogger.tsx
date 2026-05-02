@@ -1,14 +1,37 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Zap, Info, Loader2, Calendar } from 'lucide-react';
+import { Zap, Info, Loader2, Calendar, Bluetooth, BluetoothConnected, BluetoothSearching } from 'lucide-react';
 import { GlassCard } from './ui/GlassCard';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { useChargingSessions, useSettings } from '../hooks/useData';
+import { obdService } from '../lib/obd';
 
 export function ChargingLogger() {
   const { user } = useAuth();
   const { refetch } = useChargingSessions();
+
+  const handleConnectOBD = async () => {
+    setObdStatus('connecting');
+    const success = await obdService.connect();
+    if (success) {
+      setObdStatus('connected');
+      const data = await obdService.fetchData();
+      if (data.soc !== null) {
+        setStartSoc(data.soc.toString());
+      }
+    } else {
+      setObdStatus('disconnected');
+      setError('Failed to connect to OBD scanner.');
+    }
+  };
+
+  const handleFetchOBD = async () => {
+    const data = await obdService.fetchData();
+    if (data.soc !== null) {
+      setEndSoc(data.soc.toString());
+    }
+  };
   const { settings } = useSettings();
 
   const getLocalDateTime = () => {
@@ -25,6 +48,7 @@ export function ChargingLogger() {
   const [isFullCharge, setIsFullCharge] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [obdStatus, setObdStatus] = useState<'disconnected' | 'connecting' | 'connected'>('disconnected');
   const [showCalibrationInfo, setShowCalibrationInfo] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -119,6 +143,26 @@ export function ChargingLogger() {
             <p className="text-sm text-slate-400/80">Track charging sessions and costs</p>
           </div>
         </div>
+        <button
+          type="button"
+          onClick={obdStatus === 'connected' ? handleFetchOBD : handleConnectOBD}
+          className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-all ${
+            obdStatus === 'connected'
+              ? 'bg-cyan-500/10 border-cyan-500/50 text-cyan-300'
+              : 'bg-slate-800/50 border-slate-700 text-slate-400 hover:border-cyan-500/30 hover:text-cyan-400'
+          }`}
+        >
+          {obdStatus === 'connecting' ? (
+            <BluetoothSearching className="w-4 h-4 animate-pulse" />
+          ) : obdStatus === 'connected' ? (
+            <BluetoothConnected className="w-4 h-4" />
+          ) : (
+            <Bluetooth className="w-4 h-4" />
+          )}
+          <span className="text-xs font-medium">
+            {obdStatus === 'connecting' ? 'Connecting...' : obdStatus === 'connected' ? 'Fetch SoC' : 'Connect Car'}
+          </span>
+        </button>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">

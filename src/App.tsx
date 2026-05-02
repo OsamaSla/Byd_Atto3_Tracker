@@ -9,11 +9,12 @@ import { ChargingLogger } from './components/ChargingLogger';
 import { History } from './components/History';
 import { Analytics } from './components/Analytics';
 import { RangeFinder } from './components/RangeFinder';
+import { RoutePlanner } from './components/RoutePlanner';
 import { useDriveLogs, useChargingSessions, useSettings } from './hooks/useData';
 import { exportToExcel } from './lib/exportToExcel';
 import { isSupabaseConfigured } from './lib/supabase';
 
-type View = 'dashboard' | 'log-drive' | 'log-charge' | 'history' | 'analytics' | 'range-finder';
+type View = 'dashboard' | 'log-drive' | 'log-charge' | 'history' | 'analytics' | 'range-finder' | 'route-planner';
 
 function MainApp() {
   const { user, loading, signOut } = useAuth();
@@ -70,6 +71,7 @@ function MainApp() {
     { id: 'log-drive' as View, label: 'Log Drive', icon: Car },
     { id: 'log-charge' as View, label: 'Log Charge', icon: Battery },
     { id: 'history' as View, label: 'History', icon: HistoryIcon },
+    { id: 'route-planner' as View, label: 'Route Plan', icon: Navigation2 },
     { id: 'analytics' as View, label: 'Analytics', icon: TrendingUp },
   ];
 
@@ -110,7 +112,7 @@ function MainApp() {
         </div>
       </nav>
 
-      <div className="container mx-auto px-4 py-6">
+      <div className="container mx-auto px-3 py-6">
         <AnimatePresence mode="wait">
           <motion.div
             key={activeView}
@@ -125,6 +127,7 @@ function MainApp() {
             {activeView === 'log-drive' && <DriveLogger />}
             {activeView === 'log-charge' && <ChargingLogger />}
             {activeView === 'history' && <History />}
+            {activeView === 'route-planner' && <RoutePlanner />}
             {activeView === 'analytics' && <Analytics />}
           </motion.div>
         </AnimatePresence>
@@ -136,18 +139,18 @@ function MainApp() {
       </footer>
 
       <nav className="fixed bottom-0 left-0 right-0 z-50 bg-black/95 backdrop-blur-md border-t border-cyan-400/12 safe-bottom">
-        <div className="container mx-auto px-2">
-          <div className="flex items-center gap-1 overflow-x-auto py-2">
+        <div className="container mx-auto px-1">
+          <div className="flex items-center gap-0.5 overflow-x-auto py-2 scrollbar-hide">
             {navItems.map((item) => (
               <button
                 key={item.id}
                 onClick={() => setActiveView(item.id)}
-                className={`relative flex min-w-[82px] flex-1 flex-col items-center justify-center gap-1 rounded-lg px-2 py-2 text-xs font-medium transition-all ${activeView === item.id
-                    ? 'bg-cyan-500/15 text-[#00ffff] ring-1 ring-cyan-300/45 shadow-[0_0_14px_rgba(0,255,255,0.2)] before:absolute before:-top-1 before:left-1/2 before:h-1 before:w-10 before:-translate-x-1/2 before:rounded-full before:bg-cyan-300/80 before:blur-sm'
+                className={`relative flex min-w-[70px] flex-1 flex-col items-center justify-center gap-1 rounded-lg px-1 py-1.5 text-[10px] font-medium transition-all ${activeView === item.id
+                    ? 'bg-cyan-500/15 text-[#00ffff] ring-1 ring-cyan-300/45 shadow-[0_0_14px_rgba(0,255,255,0.2)] before:absolute before:-top-1 before:left-1/2 before:h-1 before:w-8 before:-translate-x-1/2 before:rounded-full before:bg-cyan-300/80 before:blur-sm'
                     : 'text-cyan-300 hover:bg-slate-800/70'
                   }`}
               >
-                <item.icon className="h-5 w-5" />
+                <item.icon className="h-4.5 w-4.5" />
                 <span className="truncate">{item.label}</span>
               </button>
             ))}

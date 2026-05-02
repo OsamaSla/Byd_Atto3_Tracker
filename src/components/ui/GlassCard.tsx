@@ -29,19 +29,19 @@ interface StatCardProps {
 
 export function StatCard({ title, value, unit, icon, trend, className = '' }: StatCardProps) {
   return (
-    <GlassCard className={`p-6 ${className}`}>
-      <div className="flex items-start justify-between mb-4">
-        <div className="p-3 bg-cyan-500/10 rounded-lg ring-1 ring-cyan-300/30 shadow-[0_0_12px_rgba(0,255,255,0.22)]">
+    <GlassCard className={`p-4 sm:p-6 ${className}`}>
+      <div className="flex items-start justify-between mb-3 sm:mb-4">
+        <div className="p-2 sm:p-3 bg-cyan-500/10 rounded-lg ring-1 ring-cyan-300/30 shadow-[0_0_12px_rgba(0,255,255,0.22)]">
           {icon}
         </div>
         {trend && (
-          <span className="text-xs font-medium text-slate-400/80">{trend}</span>
+          <span className="text-[10px] sm:text-xs font-medium text-slate-400/80">{trend}</span>
         )}
       </div>
-      <h3 className="text-sm font-semibold text-slate-300/90 mb-2">{title}</h3>
+      <h3 className="text-xs sm:text-sm font-semibold text-slate-300/90 mb-1 sm:mb-2">{title}</h3>
       <div className="flex items-baseline gap-1">
-        <span className="text-[2.15rem] leading-none font-bold text-[#39ff14] [text-shadow:0_0_10px_rgba(57,255,20,0.42)]">{value}</span>
-        {unit && <span className="text-lg font-medium text-cyan-200 [text-shadow:0_0_7px_rgba(0,255,255,0.28)]">{unit}</span>}
+        <span className="text-2xl sm:text-[2.15rem] leading-none font-bold text-[#39ff14] [text-shadow:0_0_10px_rgba(57,255,20,0.42)]">{value}</span>
+        {unit && <span className="text-sm sm:text-lg font-medium text-cyan-200 [text-shadow:0_0_7px_rgba(0,255,255,0.28)]">{unit}</span>}
       </div>
     </GlassCard>
   );

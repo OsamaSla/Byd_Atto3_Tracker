@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Car, AlertCircle, Loader2, Calendar } from 'lucide-react';
+import { Car, AlertCircle, Loader2, Calendar, Bluetooth, BluetoothConnected, BluetoothSearching } from 'lucide-react';
 import { GlassCard } from './ui/GlassCard';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { useDriveLogs, useChargingSessions } from '../hooks/useData';
 import { checkChargingLogic } from '../lib/analytics';
+import { obdService } from '../lib/obd';
 
 export function DriveLogger() {
   const { user } = useAuth();
@@ -26,6 +27,7 @@ export function DriveLogger() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [warning, setWarning] = useState('');
+  const [obdStatus, setObdStatus] = useState<'disconnected' | 'connecting' | 'connected'>('disconnected');
 
   const clampSocInput = (value: string) => {
     if (value === '') return '';
@@ -45,6 +47,28 @@ export function DriveLogger() {
       }
     }
   }, [startSoc, driveLogs, chargingSessions]);
+
+  const handleConnectOBD = async () => {
+    setObdStatus('connecting');
+    const success = await obdService.connect();
+    if (success) {
+      setObdStatus('connected');
+      const data = await obdService.fetchData();
+      if (data.soc !== null) {
+        setStartSoc(data.soc.toString());
+      }
+    } else {
+      setObdStatus('disconnected');
+      setError('Failed to connect to OBD scanner. Make sure Bluetooth is on and device is nearby.');
+    }
+  };
+
+  const handleFetchOBD = async () => {
+    const data = await obdService.fetchData();
+    if (data.soc !== null) {
+      setEndSoc(data.soc.toString());
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -117,6 +141,26 @@ export function DriveLogger() {
           <h2 className="text-xl font-bold text-cyan-100">Log Drive</h2>
           <p className="text-sm text-slate-400/80">Track your journey and consumption</p>
         </div>
+        <button
+          type="button"
+          onClick={obdStatus === 'connected' ? handleFetchOBD : handleConnectOBD}
+          className={`ml-auto flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-all ${
+            obdStatus === 'connected'
+              ? 'bg-cyan-500/10 border-cyan-500/50 text-cyan-300'
+              : 'bg-slate-800/50 border-slate-700 text-slate-400 hover:border-cyan-500/30 hover:text-cyan-400'
+          }`}
+        >
+          {obdStatus === 'connecting' ? (
+            <BluetoothSearching className="w-4 h-4 animate-pulse" />
+          ) : obdStatus === 'connected' ? (
+            <BluetoothConnected className="w-4 h-4" />
+          ) : (
+            <Bluetooth className="w-4 h-4" />
+          )}
+          <span className="text-xs font-medium">
+            {obdStatus === 'connecting' ? 'Connecting...' : obdStatus === 'connected' ? 'Fetch SoC' : 'Connect Car'}
+          </span>
+        </button>
       </div>
 
       {warning && (
