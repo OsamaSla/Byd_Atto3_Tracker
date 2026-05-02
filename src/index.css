@@ -1,0 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-black text-cyan-100 antialiased;
+    background-image:
+      radial-gradient(circle at 20% 0%, rgba(34, 211, 238, 0.04), transparent 26%),
+      linear-gradient(180deg, #000000 0%, #020617 72%, #020617 100%);
+    background-attachment: fixed;
+  }
+
+  ::selection {
+    background: rgba(34, 211, 238, 0.3);
+    color: #ecfeff;
+  }
+}

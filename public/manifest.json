@@ -1,0 +1,20 @@
+{
+  "name": "BYD Atto 3 Blade Battery Pro",
+  "short_name": "BYD Battery Pro",
+  "description": "Professional EV Battery Management System for BYD Atto 3",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0f172a",
+  "theme_color": "#22d3ee",
+  "icons": [
+    {
+      "src": "/BYD_Atto_3_512.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["utilities", "productivity"],
+  "screenshots": []
+}
