@@ -14,12 +14,18 @@ jobs:
         with:
           node-version: '20'
       - run: npm install
-      - run: npm run build
+      
+      # This step builds the app while passing in your secrets
+      - name: Build with Secrets
+        run: npm run build
+        env:
+          VITE_SUPABASE_URL: https://supabase.com/dashboard/project/ondwhdenvnxvmuyghzcl
+          VITE_SUPABASE_ANON_KEY: sb_publishable_o5mLOV40hE_ZHDPVORekBw_NicH4Xlb
+          
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: './dist'
-
   deploy:
     needs: build
     runs-on: ubuntu-latest
